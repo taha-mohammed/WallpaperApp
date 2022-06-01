@@ -50,7 +50,7 @@ fun WallpaperScreen(
     Scaffold(
         topBar = {
             WallpaperTopBar(
-                title = viewModel.categoryName ,
+                title = viewModel.categoryName,
                 onBack = onBack,
                 navToFavourite = navToFavourite
             )
@@ -116,7 +116,7 @@ fun WallpaperTopBar(title: String, onBack: () -> Unit, navToFavourite: (() -> Un
                     )
                 }
                 Text(
-                    text = title.takeIf { it != "Favourite" }?: stringResource(R.string.favourite),
+                    text = title.takeIf { it != "Favourite" } ?: stringResource(R.string.favourite),
                     style = MaterialTheme.typography.h5
                 )
             }
@@ -147,10 +147,10 @@ fun WallpaperItem(picture: Picture, onClick: () -> Unit) {
     ) {
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(context)
-                .data("https://lh3.google.com/u/0/d/" + picture.id)
+                .data("https://drive.google.com/uc?id=" + picture.id)
                 .crossfade(500)
                 .build(),
-            contentDescription = picture.name,
+            contentDescription = null,
             contentScale = ContentScale.Crop
         ) {
             val state = painter.state
@@ -160,7 +160,7 @@ fun WallpaperItem(picture: Picture, onClick: () -> Unit) {
                 ) {
                     CircularProgressIndicator()
                 }
-            }else if (state is AsyncImagePainter.State.Error){
+            } else if (state is AsyncImagePainter.State.Error) {
                 Toast.makeText(context, state.result.throwable.message, Toast.LENGTH_LONG).show()
             } else {
                 SubcomposeAsyncImageContent()

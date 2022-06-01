@@ -5,7 +5,6 @@ import android.net.Uri
 
 data class Picture(
     val id: String,
-    val name: String = "",
     var isFavourite: Boolean = false,
     var bitmap: Bitmap? = null,
     var uri: Uri? = null

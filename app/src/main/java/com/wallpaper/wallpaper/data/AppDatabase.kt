@@ -8,7 +8,7 @@ import com.wallpaper.wallpaper.data.picture.PictureDao
 import com.wallpaper.wallpaper.data.picture.PictureEntity
 
 
-@Database(entities = [PictureEntity::class, Category::class], version = 3)
+@Database(entities = [PictureEntity::class, Category::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pictureDao(): PictureDao
     abstract fun categoryDao(): CategoryDao

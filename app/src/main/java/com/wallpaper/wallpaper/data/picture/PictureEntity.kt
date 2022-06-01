@@ -8,6 +8,5 @@ import androidx.room.PrimaryKey
 data class PictureEntity(
     @PrimaryKey val id: String,
     @ColumnInfo val cid: String,
-    @ColumnInfo val name: String,
     @ColumnInfo(name = "is_favourite") val isFavourite: Boolean = false
 )

@@ -334,7 +334,7 @@ fun PictureItem(
                 .data("https://drive.google.com/uc?id=$pictureId")
                 .crossfade(500)
                 .build(),
-            contentDescription = "",
+            contentDescription = null,
             contentScale = ContentScale.Fit
         ) {
             val state = painter.state

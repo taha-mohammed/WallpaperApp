@@ -25,7 +25,7 @@ fun Bitmap.toUri(context: Context): Uri? {
             context,
             BuildConfig.APPLICATION_ID + ".provider", //(use your app signature + ".provider" )
             file
-        );
+        )
     } catch (e: IOException) {
         e.printStackTrace()
     }
@@ -48,8 +48,7 @@ fun List<DriveFile>.toPicturesEntity(categoryId: String): List<PictureEntity> {
     return this.map {
         PictureEntity(
             id = it.id,
-            cid = categoryId,
-            name = it.name
+            cid = categoryId
         )
     }
 }
@@ -59,7 +58,6 @@ fun List<PictureEntity>.toPictures(pictures: List<Picture>): List<Picture> {
         val picture = pictures.find { it.id == map.id }
         Picture(
             id = map.id,
-            name = map.name,
             isFavourite = map.isFavourite,
             bitmap = picture?.bitmap,
             uri = picture?.uri
