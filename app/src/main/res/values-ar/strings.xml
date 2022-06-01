@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">خلفيات</string>
+    <string name="category_title">الأقسام</string>
+    <string name="welcome">مرحبا بك في تطبيق خلفيات</string>
+    <string name="set_system_wallpaper">تعيين كالشاشة الرئيسية</string>
+    <string name="set_lock_wallpaper">تعيين كشاشة قفل</string>
+    <string name="set_both">تعيين الكل</string>
+    <string name="sharing_message">أرغب في مشاركة هذا التطبيق معك. يمكنك تنزيل هذا التطبيق من هنا: </string>
+    <string name="crop_and_set">قص وتعيين</string>
+    <string name="crop_error">لا يمكن قص الصورة</string>
+    <string name="favourite">المفضلة</string>
+    <string name="share_chooser_title">مشاركة عبر</string>
+    <string name="add_favourite">تم اضافتها الى المفضلة</string>
+    <string name="remove_favourite">تم ازالتها من المفضلة</string>
+    <string name="network_error">لا يوجد اتصال بالانترنت</string>
+    <string name="set_wallpaper">تم تغيير الخلفية بنجاح</string>
+    <string name="share_button">شارك تطبيقنا</string>
+    <string name="rate_button">قيمنا</string>
+    <string name="exit_button">الخروج من التطبيق</string>
+    <string name="start_download">بدأ التنزيل</string>
+</resources>
