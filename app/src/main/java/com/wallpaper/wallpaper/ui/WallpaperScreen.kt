@@ -10,10 +10,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +45,7 @@ fun WallpaperScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    var showError by remember { mutableStateOf(true) }
     Scaffold(
         topBar = {
             WallpaperTopBar(
@@ -87,7 +86,7 @@ fun WallpaperScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(data.value.wallpapers, key = { picture -> picture.id }) { picture ->
-                        WallpaperItem(picture = picture) {
+                        WallpaperItem(picture = picture, showError, { showError = it }) {
                             navToPicture(picture.id, viewModel.categoryId, viewModel.categoryName)
                         }
                     }
@@ -100,30 +99,27 @@ fun WallpaperScreen(
 
 @Composable
 fun WallpaperTopBar(title: String, onBack: () -> Unit, navToFavourite: (() -> Unit)?) {
-    TopAppBar {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        Icons.Filled.ArrowBack,
-                        modifier = Modifier.mirror(),
-                        contentDescription = "Back to Wallpaper Screen"
-                    )
-                }
-                Text(
-                    text = title.takeIf { it != "Favourite" } ?: stringResource(R.string.favourite),
-                    style = MaterialTheme.typography.h5
+    var showMenu by remember { mutableStateOf(false) }
+    TopAppBar(
+        title = {
+            Text(
+                text = title.takeIf { it != "Favourite" } ?: stringResource(R.string.favourite),
+                style = MaterialTheme.typography.h5
+            )
+        },
+        navigationIcon =
+        {
+            IconButton(onClick = onBack) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    modifier = Modifier.mirror(),
+                    contentDescription = "Back to Wallpaper Screen"
                 )
             }
-
+        },
+        actions = {
             if (navToFavourite != null) {
                 IconButton(
-                    modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = navToFavourite
                 ) {
                     Icon(
@@ -133,12 +129,20 @@ fun WallpaperTopBar(title: String, onBack: () -> Unit, navToFavourite: (() -> Un
                     )
                 }
             }
+            IconButton(onClick = { showMenu = showMenu.not() }) {
+                Icon(Icons.Filled.MoreVert, contentDescription = "")
+            }
+            WallpaperMenu(showMenu = showMenu, onDismiss = { showMenu = it })
         }
-    }
+    )
 }
 
 @Composable
-fun WallpaperItem(picture: Picture, onClick: () -> Unit) {
+fun WallpaperItem(
+    picture: Picture,
+    showError: Boolean,
+    onShowError: (Boolean) -> Unit,
+    onClick: () -> Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
@@ -160,8 +164,9 @@ fun WallpaperItem(picture: Picture, onClick: () -> Unit) {
                 ) {
                     CircularProgressIndicator()
                 }
-            } else if (state is AsyncImagePainter.State.Error) {
-                Toast.makeText(context, state.result.throwable.message, Toast.LENGTH_LONG).show()
+            } else if (state is AsyncImagePainter.State.Error && showError) {
+                Toast.makeText(context, stringResource(R.string.load_image_error), Toast.LENGTH_LONG).show()
+                onShowError(false)
             } else {
                 SubcomposeAsyncImageContent()
             }

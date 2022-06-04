@@ -35,6 +35,8 @@ class CategoryViewModel @Inject constructor(
     }
 
     suspend fun refreshDate() = withContext(viewModelScope.coroutineContext) {
+        _state.value = state.value.copy(isLoading = true)
         categoryRepo.refreshCategories()
+        _state.value = state.value.copy(isLoading = false)
     }
 }

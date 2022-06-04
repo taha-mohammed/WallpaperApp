@@ -18,5 +18,8 @@
     <string name="share_button">شارك تطبيقنا</string>
     <string name="rate_button">قيمنا</string>
     <string name="exit_button">الخروج من التطبيق</string>
-    <string name="start_download">جاري التنزيل...</string>
+    <string name="start_download">جاري التنزيل…</string>
+    <string name="about_button">عن التطبيق</string>
+    <string name="about_text">التطبيق يحتوي على صور لمختلف الشاشات يمكنك استخدام زر قص الصورة لتناسب حجم شاشتك او تنزيل الصورة على جهازك مباشرة</string>
+    <string name="load_image_error">يوجد خطأ في تحميل المحتوى, الرجاء المحاولة مرة اخرى بعد قليل</string>
 </resources>

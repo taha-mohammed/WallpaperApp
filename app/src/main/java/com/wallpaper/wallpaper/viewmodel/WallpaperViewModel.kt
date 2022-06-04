@@ -32,21 +32,24 @@ class WallpaperViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            if (categoryName == "Favourite") {
+                pictureRepo.getAllFavourites().collectLatest {
+                    _state.value = WallpaperState(it.toPictures(emptyList()))
+                }
+                return@launch
+            }
             refreshDate()
+            pictureRepo.getPictures(categoryId).collectLatest {
+                _state.value = WallpaperState(it.toPictures(emptyList()))
+            }
         }
     }
 
     suspend fun refreshDate() = viewModelScope.launch {
-        if (categoryName == "Favourite") {
-            pictureRepo.getAllFavourites().collectLatest {
-                _state.value = WallpaperState(it.toPictures(emptyList()))
-            }
+        if (categoryName == "Favourite")
             return@launch
-        }
+        _state.value = state.value.copy(isLoading = true)
         pictureRepo.refreshPictures(categoryId)
-        pictureRepo.getPictures(categoryId).collectLatest {
-            _state.value = WallpaperState(it.toPictures(emptyList()))
-        }
+        _state.value = state.value.copy(isLoading = false)
     }
 }
