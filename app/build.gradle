@@ -5,9 +5,9 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
-def apikeyPropertiesFile = rootProject.file("api.properties")
-def apiProperties = new Properties()
-apiProperties.load(new FileInputStream(apikeyPropertiesFile))
+def appkeyPropertiesFile = rootProject.file("app.properties")
+def appProperties = new Properties()
+appProperties.load(new FileInputStream(appkeyPropertiesFile))
 
 android {
     compileSdk 32
@@ -23,9 +23,9 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-        buildConfigField("String", "API_KEY", apiProperties['API_KEY'])
-        buildConfigField("String", "PARENT_ID", apiProperties['PARENT_ID'])
-
+        buildConfigField("String", "API_KEY", appProperties['API_KEY'])
+        buildConfigField("String", "PARENT_ID", appProperties['PARENT_ID'])
+        resValue("string", "app_ads_id", appProperties['APP_ADS_ID'])
     }
 
     buildTypes {
@@ -80,6 +80,8 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation("io.coil-kt:coil-gif:2.1.0")
+
+    implementation 'com.startapp:inapp-sdk:4.9.1'
 
     implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'

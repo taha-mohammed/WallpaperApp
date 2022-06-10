@@ -1,6 +1,8 @@
 package com.wallpaper.wallpaper.ui
 
+import android.app.Activity
 import android.os.Build.VERSION.SDK_INT
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -24,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -32,6 +35,9 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.startapp.sdk.ads.banner.Banner
+import com.startapp.sdk.adsbase.AutoInterstitialPreferences
+import com.startapp.sdk.adsbase.StartAppAd
 import com.wallpaper.wallpaper.R
 import com.wallpaper.wallpaper.data.ConnectionState
 import com.wallpaper.wallpaper.data.category.Category
@@ -71,10 +77,12 @@ fun CategoryScreen(
             viewModel.refreshDate()
         }
         Column(
-            Modifier.padding(it)
+            Modifier.fillMaxSize().padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val data = viewModel.state
             SwipeRefresh(
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 state = rememberSwipeRefreshState(isRefreshing = data.value.isLoading),
                 onRefresh = {
                     scope.launch {
@@ -84,7 +92,6 @@ fun CategoryScreen(
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp, 16.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -92,11 +99,24 @@ fun CategoryScreen(
                     items(data.value.categories, key = { category -> category.id }) { category ->
                         CategoryItem(category, showError, { showError = it }) {
                             navToWallpaper(category)
+                            StartAppAd.showAd(context)
+                            StartAppAd.setAutoInterstitialPreferences(
+                                AutoInterstitialPreferences()
+                                    .setSecondsBetweenAds(60)
+                            )
                         }
                     }
                 }
             }
-
+            AndroidView(
+                factory = { context ->
+                    Banner(
+                        context as Activity
+                    ).apply {
+                        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    }
+                }
+            )
         }
     }
 }

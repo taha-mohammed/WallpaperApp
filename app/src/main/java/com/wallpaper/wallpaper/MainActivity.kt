@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import com.startapp.sdk.adsbase.StartAppAd
 import com.wallpaper.wallpaper.ui.WallpaperNavGraph
 import com.wallpaper.wallpaper.ui.theme.WallpaperTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        StartAppAd.disableSplash()
 
         setContent {
             WallpaperTheme {

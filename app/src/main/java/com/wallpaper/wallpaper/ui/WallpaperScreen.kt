@@ -1,5 +1,7 @@
 package com.wallpaper.wallpaper.ui
 
+import android.app.Activity
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,12 +22,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.startapp.sdk.ads.banner.Banner
 import com.wallpaper.wallpaper.R
 import com.wallpaper.wallpaper.data.ConnectionState
 import com.wallpaper.wallpaper.data.connectivityState
@@ -34,6 +38,7 @@ import com.wallpaper.wallpaper.util.mirror
 import com.wallpaper.wallpaper.viewmodel.WallpaperViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
@@ -67,10 +72,12 @@ fun WallpaperScreen(
             viewModel.refreshDate()
         }
         Column(
-            Modifier.padding(it)
+            Modifier.fillMaxSize().padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val data = viewModel.state
             SwipeRefresh(
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 state = rememberSwipeRefreshState(isRefreshing = data.value.isLoading),
                 onRefresh = {
                     scope.launch {
@@ -80,7 +87,6 @@ fun WallpaperScreen(
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
-                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp, 16.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -92,7 +98,15 @@ fun WallpaperScreen(
                     }
                 }
             }
-
+            AndroidView(
+                factory = { context ->
+                    Banner(
+                        context as Activity
+                    ).apply {
+                        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    }
+                }
+            )
         }
     }
 }
