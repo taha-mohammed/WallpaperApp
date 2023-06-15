@@ -23,12 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
-import coil.request.ImageRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ShimmerParams
+import com.skydoves.landscapist.glide.GlideImage
 import com.startapp.sdk.ads.banner.Banner
 import com.wallpaper.wallpaper.R
 import com.wallpaper.wallpaper.data.ConnectionState
@@ -69,19 +71,23 @@ fun WallpaperScreen(
                 scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.network_error))
                 return@LaunchedEffect
             }
-            viewModel.refreshDate()
+            viewModel.refreshData()
         }
         Column(
-            Modifier.fillMaxSize().padding(it),
+            Modifier
+                .fillMaxSize()
+                .padding(it),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val data = viewModel.state
             SwipeRefresh(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 state = rememberSwipeRefreshState(isRefreshing = data.value.isLoading),
                 onRefresh = {
                     scope.launch {
-                        viewModel.refreshDate()
+                        viewModel.refreshData()
                     }
                 }
             ) {
@@ -99,6 +105,7 @@ fun WallpaperScreen(
                 }
             }
             AndroidView(
+                modifier = Modifier.fillMaxWidth(),
                 factory = { context ->
                     Banner(
                         context as Activity
@@ -163,28 +170,34 @@ fun WallpaperItem(
             .height(120.dp)
             .clickable { onClick() }
     ) {
-        SubcomposeAsyncImage(
-            model = ImageRequest.Builder(context)
-                .data("https://drive.google.com/uc?id=" + picture.id)
-                .crossfade(500)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        ) {
-            val state = painter.state
-            if (state is AsyncImagePainter.State.Loading) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        GlideImage(
+            imageModel = "https://drive.google.com/uc?id=" + picture.id,
+            requestBuilder = {
+                Glide.with(LocalContext.current)
+                    .asDrawable()
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .thumbnail(0.6f)
+            },
+            contentScale = ContentScale.Crop,
+            circularReveal = CircularReveal(),
+            shimmerParams = ShimmerParams(
+                baseColor = MaterialTheme.colors.background,
+                highlightColor = MaterialTheme.colors.onBackground,
+                durationMillis = 350,
+                dropOff = 0.65f,
+                tilt = 20f
+            ),
+            failure = {
+                if (showError) {
+                    Toast.makeText(
+                        context,
+                        stringResource(R.string.load_image_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    onShowError(false)
                 }
-            } else if (state is AsyncImagePainter.State.Error && showError) {
-                Toast.makeText(context, stringResource(R.string.load_image_error), Toast.LENGTH_LONG).show()
-                onShowError(false)
-            } else {
-                SubcomposeAsyncImageContent()
             }
-        }
+        )
     }
 }
 

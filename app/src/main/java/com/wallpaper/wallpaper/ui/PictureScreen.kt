@@ -30,13 +30,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
-import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ShimmerParams
+import com.skydoves.landscapist.glide.GlideImage
 import com.wallpaper.wallpaper.R
 import com.wallpaper.wallpaper.util.PictureEvent
 import com.wallpaper.wallpaper.util.mirror
@@ -328,26 +327,19 @@ fun PictureItem(
             interactionSource = remember { MutableInteractionSource() }
         ) { onClick() }
     ) {
-        SubcomposeAsyncImage(
+        GlideImage(
             modifier = Modifier.fillMaxSize(),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data("https://drive.google.com/uc?id=$pictureId")
-                .crossfade(500)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        ) {
-            val state = painter.state
-            if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                SubcomposeAsyncImageContent()
-            }
-        }
+            imageModel = "https://drive.google.com/uc?id=$pictureId",
+            contentScale = ContentScale.Fit,
+            circularReveal = CircularReveal(),
+            shimmerParams = ShimmerParams(
+                baseColor = MaterialTheme.colors.background,
+                highlightColor = MaterialTheme.colors.onBackground,
+                durationMillis = 350,
+                dropOff = 0.65f,
+                tilt = 20f
+            )
+        )
     }
 }
 

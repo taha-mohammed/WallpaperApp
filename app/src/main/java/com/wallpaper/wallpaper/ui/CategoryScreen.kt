@@ -1,7 +1,6 @@
 package com.wallpaper.wallpaper.ui
 
 import android.app.Activity
-import android.os.Build.VERSION.SDK_INT
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -27,14 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil.ImageLoader
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ShimmerParams
+import com.skydoves.landscapist.glide.GlideImage
 import com.startapp.sdk.ads.banner.Banner
 import com.startapp.sdk.adsbase.AutoInterstitialPreferences
 import com.startapp.sdk.adsbase.StartAppAd
@@ -77,12 +76,16 @@ fun CategoryScreen(
             viewModel.refreshDate()
         }
         Column(
-            Modifier.fillMaxSize().padding(it),
+            Modifier
+                .fillMaxSize()
+                .padding(it),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val data = viewModel.state
             SwipeRefresh(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 state = rememberSwipeRefreshState(isRefreshing = data.value.isLoading),
                 onRefresh = {
                     scope.launch {
@@ -109,6 +112,7 @@ fun CategoryScreen(
                 }
             }
             AndroidView(
+                modifier = Modifier.fillMaxWidth(),
                 factory = { context ->
                     Banner(
                         context as Activity
@@ -168,41 +172,70 @@ fun CategoryItem(
     ) {
         Box(contentAlignment = Alignment.BottomCenter) {
             val context = LocalContext.current
-            val imageLoader = ImageLoader.Builder(context)
-                .components {
-                    if (SDK_INT >= 28) {
-                        add(ImageDecoderDecoder.Factory())
-                    } else {
-                        add(GifDecoder.Factory())
-                    }
-                }.crossfade(600)
-                .build()
-            //GIF Image
-            SubcomposeAsyncImage(
-                model = "https://drive.google.com/uc?id=" + category.background,
-                modifier = Modifier.fillMaxSize(),
-                imageLoader = imageLoader,
+            GlideImage(
+                imageModel = "https://drive.google.com/uc?id=" + category.background,
+                requestBuilder = {
+                    Glide.with(LocalContext.current)
+                        .asDrawable()
+                        .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                        .thumbnail(0.6f)
+                },
+                contentScale = ContentScale.Crop,
                 contentDescription = category.name,
-                contentScale = ContentScale.Crop
-            ) {
-                val state = painter.state
-                if (state is AsyncImagePainter.State.Loading) {
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                circularReveal = CircularReveal(),
+                shimmerParams = ShimmerParams(
+                    baseColor = MaterialTheme.colors.background,
+                    highlightColor = MaterialTheme.colors.onBackground,
+                    durationMillis = 350,
+                    dropOff = 0.65f,
+                    tilt = 20f
+                ),
+                failure = {
+                    if (showError) {
+                        Toast.makeText(
+                            context,
+                            stringResource(R.string.load_image_error),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        onShowError(false)
                     }
-                } else if (state is AsyncImagePainter.State.Error && showError) {
-                    Toast.makeText(
-                        context,
-                        stringResource(R.string.load_image_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    onShowError(false)
-                } else {
-                    SubcomposeAsyncImageContent()
                 }
-            }
+            )
+//            val imageLoader = ImageLoader.Builder(context)
+//                .components {
+//                    if (SDK_INT >= 28) {
+//                        add(ImageDecoderDecoder.Factory())
+//                    } else {
+//                        add(GifDecoder.Factory())
+//                    }
+//                }.crossfade(600)
+//                .build()
+//            //GIF Image
+//            SubcomposeAsyncImage(
+//                model = "https://drive.google.com/uc?id=" + category.background,
+//                modifier = Modifier.fillMaxSize(),
+//                imageLoader = imageLoader,
+//                contentDescription = category.name,
+//                contentScale = ContentScale.Crop
+//            ) {
+//                val state = painter.state
+//                if (state is AsyncImagePainter.State.Loading) {
+//                    Box(
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        CircularProgressIndicator()
+//                    }
+//                } else if (state is AsyncImagePainter.State.Error && showError) {
+//                    Toast.makeText(
+//                        context,
+//                        stringResource(R.string.load_image_error),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                    onShowError(false)
+//                } else {
+//                    SubcomposeAsyncImageContent()
+//                }
+//            }
             //Category Title
             Row(
                 modifier = Modifier

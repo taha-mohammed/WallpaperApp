@@ -38,14 +38,14 @@ class WallpaperViewModel @Inject constructor(
                 }
                 return@launch
             }
-            refreshDate()
+            refreshData()
             pictureRepo.getPictures(categoryId).collectLatest {
                 _state.value = WallpaperState(it.toPictures(emptyList()))
             }
         }
     }
 
-    suspend fun refreshDate() = viewModelScope.launch {
+    suspend fun refreshData() = viewModelScope.launch {
         if (categoryName == "Favourite")
             return@launch
         _state.value = state.value.copy(isLoading = true)
